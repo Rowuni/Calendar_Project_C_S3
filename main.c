@@ -1,6 +1,6 @@
 //Fichier main du projet
 //Auteurs : Clément Laatar / Nicolas Gouge / Victor Bucas
-//Version : 0.1.0
+//Version : 0.2
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +12,8 @@ int main()
 {
     // Create a multi-level list with 5 levels
     t_d_list *list = create_d_list(5);
+    printf("List created:\n");
+    print_d_list(list);
 
     // Insert some values with different cell levels
     // The level of each cell is determined randomly in the insert_d_list function
@@ -28,7 +30,7 @@ int main()
     print_d_list(list);
 
     // Search for a value
-    int value = 30;
+    int value = 31;
     t_d_cell *cell = search_d_list(list, value);
     if (cell != NULL) {
         printf("Found %d in the list.\n", value);
