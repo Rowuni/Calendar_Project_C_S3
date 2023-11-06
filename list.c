@@ -24,14 +24,14 @@ t_d_cell *create_d_cell(int value, int level_max)
 
 void insert_d_list(t_d_list *list, int value)
 {
-    // Create a new cell
-    t_d_cell *new_cell = create_d_cell(value, list->level_max);
-
     // Determine the level of the new cell
     int level = rand() % (list->level_max + 1);
 
     // Insert the new cell into the list at the appropriate level
     for (int i = 0; i <= level; i++) {
+        // Create a new cell for each level
+        t_d_cell *new_cell = create_d_cell(value, list->level_max);
+
         // Check if the head array has enough elements
         if (i < list->level_max) {
             t_d_cell *current = list->head[i];
@@ -45,8 +45,8 @@ void insert_d_list(t_d_list *list, int value)
                 while (current->next[i] != NULL && current->next[i]->value < value) {
                     current = current->next[i];
                 }
-                // Check if the next array has enough elements
-                if (i < list->level_max) {
+                // Insert the new cell after the current cell only if the next cell's value is greater than or equal to the new cell's value
+                if (current->next[i] == NULL || current->next[i]->value >= value) {
                     new_cell->next[i] = current->next[i];
                     current->next[i] = new_cell;
                 }
@@ -60,27 +60,25 @@ void insert_d_list(t_d_list *list, int value)
 
 void delete_d_list(t_d_list *list, int value)
 {
-    // Search for the cell with the value to be deleted at each level of the list
-    for (int i = list->level_max - 1; i >= 0; i--) {
+    // Start from the second level (skip head_0)
+    for (int i = list->level_max - 1; i > 0; i--) {
         t_d_cell *current = list->head[i];
         if (current != NULL && current->value == value) {
             // The cell to be deleted is at the beginning of the list
             list->head[i] = current->next[i];
         } else {
             // Search for the cell in the middle or at the end of the list
-            while (current != NULL && current->next[i] != NULL && current->next[i]->value < value) {
+            while (current->next[i] != NULL && current->next[i]->value < value) {
                 current = current->next[i];
             }
             if (current != NULL && current->next[i] != NULL && current->next[i]->value == value) {
                 // The cell to be deleted is in the middle or at the end of the list
                 t_d_cell *temp = current->next[i];
                 current->next[i] = temp->next[i];
-                if (i == 0) {
-                    // Free the memory allocated for the cell
-                    free(temp);
-                    // Decrease the size of the list
-                    list->size--;
-                }
+                // Free the memory allocated for the cell
+                free(temp);
+                // Decrease the size of the list
+                list->size--;
             }
         }
     }
@@ -112,22 +110,26 @@ t_d_cell *search_d_list(t_d_list *list, int value)
     return NULL;
 }
 
-void print_d_list(t_d_list *list)
-{
+void print_d_list(t_d_list *list) {
     // Iterate over each level
     for (int i = 0; i < list->level_max; i++) {
-        printf("[list head_%d @-]-->", i);
+        printf("[list head_%d @-]", i);
         t_d_cell *current = list->head[i];
+        t_d_cell *prev = list->head[0];
         // Print all the cells in the current level
-        if (current == NULL) {
-            printf("NULL\n");
-        } else {
-            while (current != NULL) {
-                printf("[%d|@-]-->", current->value);
+        while (prev != NULL) {
+            // Print dashes for missing values at levels above 0
+            if (i > 0 && (current == NULL || prev->value < current->value)) {
+                printf("-----------");
+            }
+            // Print the cell value if it exists at the current level
+            if (current != NULL && prev->value == current->value) {
+                printf("-->[ %d|@-]", current->value);
                 current = current->next[i];
             }
-            printf("NULL\n");
+            prev = prev->next[0];
         }
+        printf("-->NULL\n");
     }
 }
 
