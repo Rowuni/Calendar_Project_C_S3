@@ -1,5 +1,4 @@
 //Fichier main du projet
-//Auteurs : Clément Laatar / Nicolas Gouge / Victor Bucas
 //Version : 1.0.0
 
 //Partie 1 (100%) | 6/6
